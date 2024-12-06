@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>QR Code File Sharing</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        />
+        <style>
+            body {
+                background-color: #f8f9fa;
+                font-family: Arial, sans-serif;
+            }
+            .upload-container {
+                margin: 50px auto;
+                max-width: 500px;
+                text-align: center;
+                padding: 30px;
+                background: white;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            .drag-drop-area {
+                border: 2px dashed #007bff;
+                padding: 30px;
+                border-radius: 8px;
+                background: #e9ecef;
+                cursor: pointer;
+            }
+            .drag-drop-area:hover {
+                background: #d4e4ff;
+            }
+            .loading-bar {
+                width: 0;
+                height: 5px;
+                background: #007bff;
+                animation: loading 2s infinite;
+            }
+            @keyframes loading {
+                0% {
+                    width: 0;
+                }
+                50% {
+                    width: 50%;
+                }
+                100% {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="upload-container">
+            <h3>Upload Your File</h3>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="drag-drop-area" id="drag-drop-area">
+                    <input
+                        type="file"
+                        name="file"
+                        id="file-input"
+                        style="display: none"
+                        onchange="showLoadingBar()"
+                    />
+                    <p>Drag & Drop your file here or click to upload</p>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">
+                    Generate QR Code
+                </button>
+            </form>
+            <div class="mt-4">
+                <div
+                    id="loading-bar"
+                    class="loading-bar"
+                    style="display: none"
+                ></div>
+            </div>
+            {% if qr_code %}
+            <div class="mt-4">
+                <h5>QR Code Generated!</h5>
+                <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" />
+                <p class="mt-2">Scan this QR code to download your file.</p>
+            </div>
+            {% endif %}
+        </div>
+        <script>
+            const dragDropArea = document.getElementById("drag-drop-area");
+            const fileInput = document.getElementById("file-input");
+            const loadingBar = document.getElementById("loading-bar");
+
+            dragDropArea.addEventListener("click", () => fileInput.click());
+            dragDropArea.addEventListener("dragover", (e) =>
+                e.preventDefault(),
+            );
+            dragDropArea.addEventListener("drop", (e) => {
+                e.preventDefault();
+                fileInput.files = e.dataTransfer.files;
+                showLoadingBar();
+            });
+
+            function showLoadingBar() {
+                loadingBar.style.display = "block";
+                setTimeout(() => (loadingBar.style.display = "none"), 2000);
+            }
+        </script>
+    </body>
+</html>
